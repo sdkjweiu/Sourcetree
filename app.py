@@ -1,12 +1,25 @@
-from flask import Flask, render_template, abort
+from flask import Flask, render_template, abort, session, redirect, url_for, flash
 from flask_bootstrap import Bootstrap
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
+from wtforms.validators import Required
+
 app = Flask(__name__)
 Bootstrap = Bootstrap(app)
 
-@app.route('/')
+class NameForm(FlaskForm):      #FlaskForm 상속
+    name = StringField('What is your name?', validators=[Required()]) #validators=[Required()] -> 필드에 데이터가 있는지 검증
+    submit = SubmitField('Submit')
+
+app.config['SECRET_KEY'] = 'hard to guess string'
+
+@app.route('/', methods=['GET', 'POST']) #wtf.quick_form 메소드가 post 방식 / 화면출력은 Get, submit 버튼은 post
 def main():
-    abort(404)
-    return '<h1>Hello World!</h1>'
+    form=NameForm()
+    if form.validate_on_submit():
+        session['name'] = form.name.data
+        return redirect(url_for('main'))
+    return render_template('index.html', form=form, name=session.get('name'))
 
 @app.route('/name/<test>')
 def name(test):
