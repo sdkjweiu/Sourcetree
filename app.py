@@ -3,9 +3,30 @@ from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import Required
+import pymysql
+import os
+from flask_mail import Mail
+from flask_mail import Message
 
 app = Flask(__name__)
 Bootstrap = Bootstrap(app)
+mail = Mail(app)
+
+app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = '@gmail.com'
+app.config['MAIL_PASSWORD'] = 'gmailPW'
+
+app.config['FLASKY_MAIL_SUBJECT_PREFIX'] = '[Flasky]'
+app.config['FLASKY_MAIL_SEDER'] = 'Flasky Admin <flasky@example.com>'
+
+def send_email(to, subject, template, **kwargs):
+    msg = Message(app.config['FLASKY_MAIL_SUBJECT_PREFIX'] + subject,
+                    sender=app.config['FLASKY_MAIL_SENDER'], recipients=[to])
+    msg.body = render_template(template + '.txt', **kwargs)
+    msg.html = render_template(template + '.html', **kwargs)
+    mail.send(msg)
 
 class NameForm(FlaskForm):      #FlaskForm 상속
     name = StringField('What is your name?', validators=[Required()]) #validators=[Required()] -> 필드에 데이터가 있는지 검증
@@ -17,13 +38,21 @@ app.config['SECRET_KEY'] = 'hard to guess string'
 def main():
     form=NameForm()
     if form.validate_on_submit():
-        old_name = session.get('name')
-        if old_name is not None and old_name != form.name.data:
-            flash('Looks like you have changed your name!')
+        conn = pymysql.connect(host='192.168.182.128', port=3306, user='mysqlID', passwd='mysqlPW', database='flasky')
+        cur = conn.cursor()
+        cur.execute('select username from user where username="%s"' %(form.name.data))
+        user = cur.fetchone()  #fetchone() 결과값 보여줌=리턴
+        if user is None:
+            cur.execute('insert into user (username) value ("%s")' %(form.name.data))
+            conn.commit()       #DML에서는 커밋을 해야함, 저장
+            session['known'] = False
+            
+        else:
+            session['known'] = True
         session['name'] = form.name.data
         form.name.data = ''
         return redirect(url_for('main'))
-    return render_template('index.html', form=form, name=session.get('name'))
+    return render_template('index.html', form=form, name=session.get('name'), known = session.get('known', False))
 
 @app.route('/name/<test>')
 def name(test):
@@ -36,7 +65,6 @@ def index():
 @app.route('/user/<name>')
 def user(name):
     return render_template('user.html', test=name)
-
 
 @app.errorhandler(404)
 def page_not_found(e):
