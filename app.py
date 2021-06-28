@@ -4,7 +4,6 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import Required
 import pymysql
-import os
 from flask_mail import Mail
 from flask_mail import Message
 
