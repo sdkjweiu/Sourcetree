@@ -18,8 +18,7 @@ def create_app(config_name):
     bootstrap.init_app(app)     #초기화
     mail.init_app(app)
 
-    from .main import main as main_blueprint        # main을 썼을 때는 app 폴더가 있는 위치(SourceTree)에서 main을 찾게 된다
-    app.register_blueprint(main_blueprint)          # .main을 써서 app 폴더 안에 있는 main을 찾게 해준다
+    from .main import main as main_blueprint        # main을 썼을 때는 app 폴더가 있는 위치(SourceTree)에서 main을 찾게 된다  / .main을 써서 app 폴더 안에 있는 main을 찾게 해준다
+    app.register_blueprint(main_blueprint)          # bluprint에서 합친 걸 app에 적용
 
     return app
-
