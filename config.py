@@ -1,7 +1,6 @@
-import sys
-sys.path.append('d:/Sourcetree_account')
-import email_adr
-import pymysql_con
+
+
+
 
 class Config:
     SECRET_KEY = 'hard to guess string'
@@ -16,11 +15,19 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    MAIL_SENDER = 'smtp.googlemail.com'
+    MAIL_SERVER = 'smtp.googlemail.com'
     MAIL_PORT = 587
-    MAIL_USE_TLE = True
+    MAIL_USE_TLS= True
+
+    import sys
+    sys.path.append('d:/Sourcetree_account')
+    import email_adr
     MAIL_USERNAME = email_adr.MAIL_USERNAME
     MAIL_PASSWORD = email_adr.MAIL_PASSWORD
+    import pymysql_con
+    DB_USER = pymysql_con.user
+    DB_PASSWD = pymysql_con.passwd
+
 
 class TestingConfig(Config):
     TESTING = True
