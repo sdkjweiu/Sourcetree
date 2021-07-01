@@ -1,4 +1,5 @@
 from flask import Flask, render_template
+from flask.helpers import url_for
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
@@ -20,5 +21,8 @@ def create_app(config_name):
 
     from .main import main as main_blueprint        # main을 썼을 때는 app 폴더가 있는 위치(SourceTree)에서 main을 찾게 된다  / .main을 써서 app 폴더 안에 있는 main을 찾게 해준다
     app.register_blueprint(main_blueprint)          # bluprint에서 합친 걸 app에 적용
+
+    from .auth import auth as auth_blueprint
+    app.register_blueprint(auth_blueprint, url_prefix='/auth')      # url_prefix : 블루프린트에서 정의된 모든 라우트에 접두어를 붙여 등록, 개발속도 단축용
 
     return app

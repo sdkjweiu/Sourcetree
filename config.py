@@ -1,5 +1,7 @@
-
-
+import sys
+sys.path.append('d:/Sourcetree_account')
+import email_adr
+import pymysql_con
 
 
 class Config:
@@ -19,12 +21,10 @@ class DevelopmentConfig(Config):
     MAIL_PORT = 587
     MAIL_USE_TLS= True
 
-    import sys
-    sys.path.append('d:/Sourcetree_account')
-    import email_adr
+    
     MAIL_USERNAME = email_adr.MAIL_USERNAME
     MAIL_PASSWORD = email_adr.MAIL_PASSWORD
-    import pymysql_con
+    
     DB_USER = pymysql_con.user
     DB_PASSWD = pymysql_con.passwd
 
