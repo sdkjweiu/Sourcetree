@@ -23,4 +23,4 @@ def index():
         session['name'] = form.name.data
         form.name.data = ''
         return redirect(url_for('.index'))
-    return render_template('index.html', form=form, name=session.get('name'), know=session.get('known', False))
+    return render_template('index.html')
